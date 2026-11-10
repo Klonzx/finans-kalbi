@@ -20,24 +20,29 @@ const isLayoutLocked = computed(() => {
   return layoutStore.layoutLocked || !isResizableLayout.value;
 });
 
-const gridLayoutData = computed((): GridItemData[] => {
-  if (isResizableLayout.value) {
-    return layoutStore.dashboardLayout;
-  }
-  return [...layoutStore.getDashboardLayoutSm];
-});
+// Bu iki grafik üst grafik bandında (Profit over time, Cumulative Profit) gösterilir.
+// Izgarada tekrar çizilmez; layout kaydında kalmaya devam ederler ki ayar sıfırlanmasın.
+const TOP_CHART_IDS: number[] = [DashboardLayout.dailyChart, DashboardLayout.cumChartChart];
 
-function layoutUpdatedEvent(newLayout) {
-  if (isResizableLayout.value) {
-    console.log('newlayout', newLayout);
-    console.log('saving dashboard');
-    layoutStore.dashboardLayout = newLayout;
-  }
+function gridOnly(layout: GridItemData[]): GridItemData[] {
+  return layout.filter((item) => !TOP_CHART_IDS.includes(item.i as number));
 }
 
-const gridLayoutDaily = computed((): GridItemData => {
-  return findGridLayout(gridLayoutData.value, DashboardLayout.dailyChart);
+const gridLayoutData = computed((): GridItemData[] => {
+  if (isResizableLayout.value) {
+    return gridOnly(layoutStore.dashboardLayout);
+  }
+  return gridOnly([...layoutStore.getDashboardLayoutSm]);
 });
+
+function layoutUpdatedEvent(newLayout: GridItemData[]) {
+  if (isResizableLayout.value) {
+    const topCharts = layoutStore.dashboardLayout.filter((item) =>
+      TOP_CHART_IDS.includes(item.i as number),
+    );
+    layoutStore.dashboardLayout = [...newLayout, ...topCharts];
+  }
+}
 
 const gridLayoutBotComparison = computed((): GridItemData => {
   return findGridLayout(gridLayoutData.value, DashboardLayout.botComparison);
@@ -48,10 +53,6 @@ const gridLayoutAllOpenTrades = computed((): GridItemData => {
 });
 const gridLayoutAllClosedTrades = computed((): GridItemData => {
   return findGridLayout(gridLayoutData.value, DashboardLayout.allClosedTrades);
-});
-
-const gridLayoutCumChart = computed((): GridItemData => {
-  return findGridLayout(gridLayoutData.value, DashboardLayout.cumChartChart);
 });
 
 const gridLayoutWalletHistory = computed((): GridItemData => {
@@ -67,7 +68,7 @@ const gridLayoutTradesLogChart = computed((): GridItemData => {
 
 const responsiveGridLayouts = computed(() => {
   return {
-    sm: layoutStore.getDashboardLayoutSm,
+    sm: gridOnly([...layoutStore.getDashboardLayoutSm]),
   };
 });
 
@@ -90,6 +91,24 @@ onMounted(async () => {
         <DryRunBadge :dry-run="dashboardKpis.dryRun" />
       </div>
       <DashboardKpiRow />
+      <div class="grid shrink-0 gap-2 xl:h-[340px] xl:grid-cols-2">
+        <div class="h-[300px] min-w-0 xl:h-full">
+          <DraggableContainer
+            :header="`Profit over time ${botStore.botCount > 1 ? 'combined' : ''}`"
+          >
+            <PeriodBreakdown multi-bot-view />
+          </DraggableContainer>
+        </div>
+        <div class="h-[300px] min-w-0 xl:h-full">
+          <DraggableContainer header="Cumulative Profit">
+            <CumProfitChart
+              :trades="botStore.allTradesSelectedBots"
+              :open-trades="botStore.allOpenTradesSelectedBots"
+              :show-title="false"
+            />
+          </DraggableContainer>
+        </div>
+      </div>
       <div class="grid shrink-0 gap-2 xl:h-[380px] xl:grid-cols-3">
         <TradePerformancePanel />
         <MarketPanel />
@@ -114,21 +133,6 @@ onMounted(async () => {
     @update:breakpoint="breakpointChanged"
   >
     <template #default="{ gridItemProps }">
-      <GridItem
-        v-bind="gridItemProps"
-        :i="gridLayoutDaily.i"
-        :x="gridLayoutDaily.x"
-        :y="gridLayoutDaily.y"
-        :w="gridLayoutDaily.w"
-        :h="gridLayoutDaily.h"
-        :min-w="3"
-        :min-h="4"
-        drag-allow-from=".drag-header"
-      >
-        <DraggableContainer :header="`Profit over time ${botStore.botCount > 1 ? 'combined' : ''}`">
-          <PeriodBreakdown multi-bot-view />
-        </DraggableContainer>
-      </GridItem>
       <GridItem
         v-bind="gridItemProps"
         :i="gridLayoutBotComparison.i"
@@ -160,25 +164,6 @@ onMounted(async () => {
           info-text="Open trades of all selected bots. Click on a trade to go to the trade page for that trade/bot."
         >
           <TradeList active-trades :trades="botStore.allOpenTradesSelectedBots" multi-bot-view />
-        </DraggableContainer>
-      </GridItem>
-      <GridItem
-        v-bind="gridItemProps"
-        :i="gridLayoutCumChart.i"
-        :x="gridLayoutCumChart.x"
-        :y="gridLayoutCumChart.y"
-        :w="gridLayoutCumChart.w"
-        :h="gridLayoutCumChart.h"
-        :min-w="3"
-        :min-h="4"
-        drag-allow-from=".drag-header"
-      >
-        <DraggableContainer header="Cumulative Profit">
-          <CumProfitChart
-            :trades="botStore.allTradesSelectedBots"
-            :open-trades="botStore.allOpenTradesSelectedBots"
-            :show-title="false"
-          />
         </DraggableContainer>
       </GridItem>
       <GridItem

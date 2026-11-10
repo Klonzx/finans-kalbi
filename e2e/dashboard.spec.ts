@@ -45,6 +45,18 @@ test.describe('Dashboard', () => {
     await expect(page.locator('.drag-header', { hasText: 'Trades Log' })).toBeInViewport();
   });
 
+  test('Top chart band is visible on load, above the widget grid', async ({ page }) => {
+    await page.goto('/dashboard');
+    const profitOverTime = page.locator('.drag-header', { hasText: 'Profit over time' });
+    const cumulative = page.locator('.drag-header', { hasText: 'Cumulative Profit' });
+    await expect(profitOverTime).toBeInViewport();
+    await expect(cumulative).toBeInViewport();
+    // Each chart is rendered once: the top band, not also in the widget grid
+    await expect(profitOverTime).toHaveCount(1);
+    await expect(cumulative).toHaveCount(1);
+    await expect(page.locator('.drag-header', { hasText: 'Bot comparison' })).not.toBeInViewport();
+  });
+
   test('Dashboard Page - mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await Promise.all([
