@@ -118,6 +118,13 @@ export default defineConfig({
         target: 'http://127.0.0.1:8080',
         changeOrigin: true,
       },
+      // JARVIS AI backend. Docker publishes it on 8001; a host-run instance uses 8000.
+      // It has no CORS middleware, so the browser must reach it through this proxy.
+      '/jarvis': {
+        target: process.env.JARVIS_API_TARGET ?? 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/jarvis/, ''),
+      },
     },
     host: '127.0.0.1',
     port: 3000,

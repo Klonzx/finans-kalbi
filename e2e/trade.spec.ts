@@ -17,7 +17,8 @@ test.describe('Trade', () => {
       page.waitForResponse('**/status'),
       page.waitForResponse('**/profit'),
       page.waitForResponse('**/balance'),
-      //  page.waitForResponse('**/trades'),
+      // Trades are requested with a query string, so match with a trailing wildcard.
+      page.waitForResponse('**/trades*'),
       page.waitForResponse('**/whitelist'),
       page.waitForResponse('**/blacklist'),
       page.waitForResponse('**/locks'),

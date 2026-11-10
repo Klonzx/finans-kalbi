@@ -58,11 +58,11 @@ test.describe('Pairlists', () => {
     await setLoginInfo(page);
   });
   test('Pairlists page', async ({ page }) => {
-    page.goto('/');
-
-    const pairlistConfig = page.locator('a', { hasText: 'Pairlist Config' });
-
-    await Promise.all([pairlistConfig.click(), page.waitForResponse('**/pairlists/available*')]);
+    // Not in the Finans Kalbi sidebar; the page is reached by its route.
+    await Promise.all([
+      page.goto('/pairlist_config'),
+      page.waitForResponse('**/pairlists/available*'),
+    ]);
 
     const volumePairList = page.locator('text="VolumePairList"');
     await expect(volumePairList).toBeVisible();

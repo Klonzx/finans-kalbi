@@ -15,21 +15,19 @@ test.describe('Analysis', () => {
   });
   test('Analysis navigation', async ({ page }) => {
     await page.goto('/');
-    const analysisButton = page.getByRole('button', { name: 'Analysis' });
-    await expect(analysisButton).toBeInViewport();
-    await expect(page.getByText('Recursive analysis')).not.toBeInViewport();
-    await expect(page.getByText('Lookahead analysis')).not.toBeInViewport();
-    await analysisButton.click();
-    await expect(page.getByText('Recursive analysis')).toBeInViewport();
-    await expect(page.getByText('Lookahead analysis')).toBeInViewport();
-    // Click recursive analysis
-    await page.getByText('Recursive analysis').click();
-    await expect(page).toHaveURL(/recursive_analysis/);
+    // The ANALİZ section of the Finans Kalbi sidebar lists the analysis entry points.
+    const sidebar = page.locator('aside');
+    const backtestLink = sidebar.locator('a', { hasText: 'Backtesting' });
+    await expect(backtestLink).toBeVisible();
+    await expect(sidebar.locator('a', { hasText: 'İşlem Kayıtları' })).toBeVisible();
+    await backtestLink.click();
+    await expect(page).toHaveURL(/backtest/);
+    await expect(backtestLink).toHaveClass(/sidebar-link-active/);
+
+    // Recursive and lookahead analysis are reached by their routes (not in the sidebar).
+    await page.goto('/recursive_analysis');
     await expect(page.getByText('Recursive Analysis', { exact: true })).toBeInViewport();
-    // Click lookahead analysis
-    await page.getByRole('button', { name: 'Analysis', exact: true }).click();
-    await page.getByText('Lookahead analysis').click();
-    await expect(page).toHaveURL(/lookahead_analysis/);
+    await page.goto('/lookahead_analysis');
     await expect(page.getByText('Lookahead Analysis', { exact: true })).toBeInViewport();
   });
 
@@ -72,7 +70,9 @@ test.describe('Analysis', () => {
     // Delays by a second due to background task timing
     await expect(page.getByText('Analysis Result', { exact: true })).toBeInViewport();
     await expect(page.getByText('No lookahead bias detected')).toBeInViewport();
-    await expect(page.getByRole('cell', { name: 'AverageStrategy' })).toBeInViewport();
+    const resultCell = page.getByRole('cell', { name: 'AverageStrategy' });
+    await resultCell.scrollIntoViewIfNeeded();
+    await expect(resultCell).toBeInViewport();
     await expect(page.getByText('No lookahead bias detected')).toBeInViewport();
   });
 

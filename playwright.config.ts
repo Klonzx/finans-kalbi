@@ -28,6 +28,9 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Pin the browser locale: number formatting ("8070.5" vs "8070,5") must not depend on the machine. */
+    locale: 'en-US',
   },
 
   /* Configure projects for major browsers */
@@ -38,7 +41,12 @@ export default defineConfig({
     },
     {
       name: 'msedge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' }, // or "msedge-beta" or 'msedge-dev'
+      use: {
+        ...devices['Desktop Edge'],
+        channel: 'msedge', // or "msedge-beta" or 'msedge-dev'
+        // Edge takes Intl's default locale from the OS (tr-TR here); pin it so number formats match.
+        launchOptions: { args: ['--lang=en-US'] },
+      },
     },
     {
       name: 'firefox',
@@ -74,7 +82,8 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: !process.env.CI ? 'pnpm run dev' : 'pnpm run preview --port 3000',
-    url: 'http://localhost:3000',
+    // Vite listens on 127.0.0.1 (see vite.config.ts); "localhost" can resolve to ::1 and never answer.
+    url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
   },
 });

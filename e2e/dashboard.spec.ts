@@ -1,5 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { setLoginInfo, defaultMocks, tradeMocks } from './helpers';
+
+// The KPI/market/JARVIS section sits above the widget grid, so grid widgets are
+// below the fold on load. Scroll each one into view before asserting viewport presence.
+async function expectInView(page: Page, selector: string) {
+  const header = page.locator('.drag-header', { hasText: selector });
+  await header.scrollIntoViewIfNeeded();
+  await expect(header).toBeInViewport();
+}
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
@@ -19,13 +27,13 @@ test.describe('Dashboard', () => {
       page.waitForResponse('**/locks'),
     ]);
     await expect(page.locator('.drag-header', { hasText: 'Bot comparison' })).toBeVisible();
-    await expect(page.locator('.drag-header', { hasText: 'Bot comparison' })).toBeInViewport();
+    await expectInView(page, 'Bot comparison');
     await expect(page.locator('.drag-header', { hasText: 'Profit over time' })).toBeVisible();
-    await expect(page.locator('.drag-header', { hasText: 'Profit over time' })).toBeInViewport();
+    await expectInView(page, 'Profit over time');
     await expect(page.locator('.drag-header', { hasText: 'Open trades' })).toBeVisible();
-    await expect(page.locator('.drag-header', { hasText: 'Open trades' })).toBeInViewport();
+    await expectInView(page, 'Open trades');
     await expect(page.locator('.drag-header', { hasText: 'Cumulative Profit' })).toBeVisible();
-    await expect(page.locator('.drag-header', { hasText: 'Cumulative Profit' })).toBeInViewport();
+    await expectInView(page, 'Cumulative Profit');
 
     await expect(page.locator('span').filter({ hasText: /^TestBot$/ })).toBeVisible();
     await expect(page.locator('span', { hasText: 'Summary' })).toBeVisible();
@@ -62,6 +70,7 @@ test.describe('Dashboard', () => {
       expect(cardWidth).toBeLessThanOrEqual(viewportWidth);
     }
     await expect(page.getByText('Open Trades')).toBeVisible();
+    await page.getByText('Open Trades').scrollIntoViewIfNeeded();
     await expect(page.getByText('Open Trades')).toBeInViewport();
   });
 });

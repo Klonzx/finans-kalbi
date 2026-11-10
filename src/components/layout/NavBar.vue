@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import Favico from 'favico.js';
 
 import type { AuthStorageWithBotId } from '@/types';
@@ -237,23 +237,19 @@ function editBotLogin(botId: string) {
 <template>
   <header>
     <div class="flex border-b border-primary">
-      <RouterLink class="ms-2 flex flex-row items-center pe-2 gap-2" exact to="/">
-        <AppIcon class="h-9 w-9" />
-        <AppText class="md:hidden lg:inline" />
-      </RouterLink>
+      <RouterLink class="ms-3 flex flex-row items-center gap-3 pe-3" exact to="/">
+  <div class="flex items-center justify-center w-9 h-9 rounded-xl border border-cyan-400/30 bg-cyan-500/10">
+    <i class="i-mdi-lightning-bolt text-2xl text-cyan-300"></i>
+  </div>
+  <div class="flex flex-col">
+    <span class="font-bold text-base tracking-wide text-white">FINANS KALBI</span>
+    <span class="text-[9px] tracking-[0.22em] text-cyan-400">JARVIS TRADING</span>
+  </div>
+</RouterLink>
       <div class="flex justify-between w-full text-center items-center ms-3">
         <div class="items-center hidden md:flex gap-5 ms-5">
-          <UNavigationMenu
-            :items="nonMobileNavItems"
-            variant="link"
-            content-orientation="vertical"
-            :ui="{
-              item: 'py-0',
-              link: 'text-md',
-            }"
-          />
-          <ThemeSelect />
-        </div>
+  <ThemeSelect />
+</div>
 
         <!-- Right aligned nav items -->
         <div v-if="!isMobile" class="flex ms-auto">
@@ -355,3 +351,4 @@ function editBotLogin(botId: string) {
     </div>
   </header>
 </template>
+

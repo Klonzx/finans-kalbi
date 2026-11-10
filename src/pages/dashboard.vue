@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDashboardKpis } from '@/composables/useDashboardKpis';
 import type { GridItemData } from '@/types';
+import { BRAND } from '@/utils/brand';
 
 const botStore = useBotStore();
+const { kpis: dashboardKpis } = useDashboardKpis();
 
 const layoutStore = useLayoutStore();
 const currentBreakpoint = ref('');
@@ -77,8 +80,24 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="flex h-full w-full flex-col gap-2 overflow-y-auto">
+    <div class="shrink-0 space-y-2">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2">
+          <span class="text-sm font-semibold text-[var(--fk-text)]">{{ BRAND.name }}</span>
+          <span class="text-xs text-[var(--fk-text-muted)]">{{ BRAND.terminalLabel }}</span>
+        </div>
+        <DryRunBadge :dry-run="dashboardKpis.dryRun" />
+      </div>
+      <DashboardKpiRow />
+      <div class="grid shrink-0 gap-2 xl:h-[380px] xl:grid-cols-3">
+        <TradePerformancePanel />
+        <MarketPanel />
+        <JarvisPanel />
+      </div>
+    </div>
   <GridLayout
-    class="h-full w-full"
+    class="w-full shrink-0"
     style="padding: 1px"
     :row-height="50"
     :layout="gridLayoutData"
@@ -232,4 +251,5 @@ onMounted(async () => {
       </GridItem>
     </template>
   </GridLayout>
+  </div>
 </template>

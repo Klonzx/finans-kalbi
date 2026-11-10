@@ -1,0 +1,19 @@
+/*
+  Finans Kalbi terminal tema değişkenleri.
+  Kâr/zarar renkleri bilinçli olarak mevcut --color-profit / --color-loss
+  değişkenlerine bağlanır; böylece colors.ts (cssVars) üzerinden gelen
+  kullanıcı tercihi bozulmaz.
+*/
+:root {
+  --fk-bg: #05080d;
+  --fk-surface: #0b1220;
+  --fk-surface-raised: #111a2b;
+  --fk-border: #1e2a3d;
+  --fk-text: #e2e8f0;
+  --fk-text-muted: #94a3b8;
+  --fk-accent: #00c3e6;
+  --fk-accent-strong: #0089a1;
+  --fk-warning: #f59e0b;
+  --fk-profit: var(--color-profit);
+  --fk-loss: var(--color-loss);
+}
