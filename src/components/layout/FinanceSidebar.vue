@@ -9,7 +9,9 @@ const sections = [
     items: [
       { label: 'Dashboard', icon: 'i-mdi-view-dashboard-outline', to: '/dashboard' },
       { label: 'Piyasalar', icon: 'i-mdi-chart-box-outline', to: '/pairlist' },
+      { label: 'Pairlist Config', icon: 'i-mdi-format-list-group', to: '/pairlist_config' },
       { label: 'Grafik Terminali', icon: 'i-mdi-chart-line', to: '/graph' },
+      { label: 'Ayarlar', icon: 'i-mdi-cog-outline', to: '/settings' },
     ],
   },
   {
@@ -26,6 +28,7 @@ const sections = [
     items: [
       { label: 'Backtesting', icon: 'i-mdi-chart-timeline-variant', to: '/backtest' },
       { label: 'Stratejiler', icon: 'i-mdi-brain', to: '/backtest' },
+      { label: 'Veri İndirme', icon: 'i-mdi-database-arrow-down-outline', to: '/download_data' },
       { label: 'İşlem Kayıtları', icon: 'i-mdi-text-box-outline', to: '/logs' },
     ],
   },

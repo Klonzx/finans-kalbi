@@ -28,7 +28,10 @@ test.describe('Backtesting', () => {
   test('Starts webserver mode', async ({ page }) => {
     await page.goto('/backtest');
 
-    await expect(page.locator('a', { hasText: 'Backtest' })).toBeInViewport();
+    // The sidebar nav scrolls on short viewports; bring the active link into view first.
+    const backtestLink = page.locator('aside a', { hasText: 'Backtesting' });
+    await backtestLink.scrollIntoViewIfNeeded();
+    await expect(backtestLink).toBeInViewport();
     await expect(page.getByRole('heading', { name: 'New backtest' })).toBeInViewport();
     await expect(page.getByText('Use time')).toBeInViewport();
 

@@ -35,6 +35,26 @@ test.describe('Finans Kalbi navigation - desktop sidebar', () => {
     await expect(page).toHaveURL(/pairlist/);
   });
 
+  test('settings, data download and pairlist config are linked in the sidebar', async ({
+    page,
+  }) => {
+    await page.goto('/dashboard');
+    const sidebar = page.locator('aside');
+
+    const cases = [
+      { label: 'Pairlist Config', url: /pairlist_config/ },
+      { label: 'Veri İndirme', url: /download_data/ },
+      { label: 'Ayarlar', url: /settings/ },
+    ];
+    for (const { label, url } of cases) {
+      const link = sidebar.locator('a', { hasText: label });
+      await expect(link).toBeVisible();
+      await link.click();
+      await expect(page).toHaveURL(url);
+      await expect(link).toHaveClass(/sidebar-link-active/);
+    }
+  });
+
   test('coming-soon items are shown but not clickable links', async ({ page }) => {
     await page.goto('/dashboard');
     const sidebar = page.locator('aside');

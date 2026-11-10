@@ -55,8 +55,9 @@ test.describe('Download Data View', () => {
   test('Download Data page ', async ({ page }) => {
     const downloadDataPromise = page.waitForRequest('**/api/v1/download_data');
 
-    // Not in the Finans Kalbi sidebar; the page is reached by its route.
-    await page.goto('/download_data');
+    await page.goto('/');
+    await page.locator('aside a', { hasText: 'Veri İndirme' }).click();
+    await page.waitForURL('**/download_data');
 
     await page.getByRole('button', { name: 'All USDT Pairs' }).click();
 
@@ -91,7 +92,9 @@ test.describe('Download Data View', () => {
   test('Download Data page with advanced settings', async ({ page }) => {
     const downloadDataPromise = page.waitForRequest('**/api/v1/download_data');
 
-    await page.goto('/download_data');
+    await page.goto('/');
+    await page.locator('aside a', { hasText: 'Veri İndirme' }).click();
+    await page.waitForURL('**/download_data');
 
     await page.getByRole('button', { name: 'All USDT Pairs' }).click();
     const daysInput = page.getByLabel('Days to download');
